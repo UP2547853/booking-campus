@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Bookings | Hogwarts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .booking-container {
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background: rgba(10,10,20,0.85);
+      border: 2px solid #ffdd57;
+      border-radius: 12px;
+      color: #f0e6c8;
+      position: relative;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      padding: 0.6rem;
+      border: 1px solid #444;
+    }
+    button.cancel-btn {
+      background: #c0392b;
+      border: none;
+      color: #fff;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button.cancel-btn:hover {
+      background: #e74c3c;
+    }
+  </style>
+</head>
+<body class="booking-page">
+  <div class="booking-container">
+    <h2>🗓️ My Bookings</h2>
+    <p>If you need to cancel, click <strong>Cancel</strong> below:</p>
+    <button id="refreshBtn" class="refresh-btn">Refresh</button>
+    <table id="myBookingsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Facility</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+  const API = 'http://localhost:3000/api';
+
+  // Load this user's bookings
+  async function loadMyBookings() {
+    const hogwartsId = localStorage.getItem('hogwartsId');
+    console.log("🔑 loadMyBookings(), hogwartsId =", hogwartsId);
+    if (!hogwartsId) {
+      console.warn("No hogwartsId in localStorage – redirecting to login");
+      return window.location.href = 'login.html';
+    }
+
+    try {
+      const res = await fetch(`${API}/my-bookings?hogwartsId=${encodeURIComponent(hogwartsId)}`);
+      console.log("📡 GET /api/my-bookings status:", res.status);
+      const bookings = await res.json();
+      console.log("📋 bookings data:", bookings);
+      renderTable(bookings);
+    } catch (err) {
+      console.error('Error loading your bookings:', err);
+    }
+  }
+
+  // Render rows
+  function renderTable(bookings) {
+    const tbody = document.querySelector('#myBookingsTable tbody');
+    tbody.innerHTML = '';
+    if (bookings.length === 0) {
+      console.log("No bookings to show");
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">No bookings found.</td></tr>';
+      return;
+    }
+    bookings.forEach(b => {
+      console.log("Rendering booking row:", b);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${b.id}</td>
+        <td>${b.facility}</td>
+        <td>${b.date}</td>
+        <td>${b.timeSlot}</td>
+        <td><button class="cancel-btn" onclick="cancelBooking(${b.id})">Cancel</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Cancel a booking
+  async function cancelBooking(id) {
+    console.log("🗑  cancelBooking()", id);
+    if (!confirm('Are you sure you want to cancel this booking?')) return;
+    try {
+      const res = await fetch(`${API}/book/${id}`, { method: 'DELETE' });
+      console.log("DELETE status:", res.status);
+      loadMyBookings();
+    } catch (err) {
+      console.error('Error cancelling booking:', err);
+    }
+  }
+
+  document.getElementById('refreshBtn').addEventListener('click', loadMyBookings);
+  document.addEventListener('DOMContentLoaded', loadMyBookings);
+</script>
+</body>
+</html>

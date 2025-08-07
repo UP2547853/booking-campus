@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book a Facility | Hogwarts</title>
+  <!-- Magic font -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="booking-page">
+  <div class="booking-container">
+    <!-- tiny logout in corner -->
+    <button id="logoutBtn" class="logout-button">Logout</button>
+
+    <!-- Page title -->
+    <h2>📚 Book a Facility</h2>
+
+    <!-- Booking form -->
+    <form id="bookingForm">
+      <!-- Facility selector -->
+      <div class="form-group">
+        <label for="facility">Select Facility:</label>
+        <select id="facility" required>
+          <option value="">— Select Facility —</option>
+          <option value="badminton">Badminton Court</option>
+          <option value="swimming">Swimming Pool</option>
+          <option value="gym">Gym</option>
+          <option value="classroomA">Classroom A</option>
+          <option value="classroomB">Classroom B</option>
+          <option value="classroomC">Classroom C</option>
+          <option value="classroomD">Classroom D</option>
+        </select>
+      </div>
+
+      <!-- Date picker -->
+      <div class="form-group">
+        <label for="bookingDate">Select Date:</label>
+        <input type="date" id="bookingDate" required>
+      </div>
+
+      <!-- Heatmap -->
+      <div id="availabilityGrid" class="availability-grid"></div>
+
+      <!-- Time-slot selector -->
+      <div class="form-group">
+        <label for="timeSlot">Select Time Slot:</label>
+        <select id="timeSlot" required>
+          <option value="">— Select Time Slot —</option>
+          <option value="08:00-09:00">08:00 – 09:00</option>
+          <option value="09:00-10:00">09:00 – 10:00</option>
+          <option value="10:00-11:00">10:00 – 11:00</option>
+          <option value="11:00-12:00">11:00 – 12:00</option>
+          <option value="13:00-14:00">13:00 – 14:00</option>
+          <option value="14:00-15:00">14:00 – 15:00</option>
+          <option value="15:00-16:00">15:00 – 16:00</option>
+          <option value="16:00-17:00">16:00 – 17:00</option>
+          <option value="17:00-18:00">17:00 – 18:00</option>
+          <option value="18:00-19:00">18:00 – 19:00</option>
+          <option value="19:00-20:00">19:00 – 20:00</option>
+          <option value="20:00-21:00">20:00 – 21:00</option>
+          <option value="21:00-22:00">21:00 – 22:00</option>
+        </select>
+      </div>
+
+      <!-- Buttons side-by-side -->
+      <div class="actions">
+        <a href="bookingDisplay.html" class="view-bookings-btn">View My Bookings</a>
+        <button type="submit" class="book-now-btn">Book Now</button>
+      </div>
+    </form>
+
+    <!-- Result message -->
+    <div id="bookingResult"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

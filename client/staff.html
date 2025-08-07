@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Staff Dashboard | Hogwarts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Quick tweaks to match your theme */
+    #stats p { font-size: 1.1em; margin: .5rem 0; }
+    #bookingsTable { width:100%; border-collapse: collapse; margin-top:1rem; }
+    #bookingsTable th, #bookingsTable td { padding: .5rem; border: 1px solid #444; }
+    #bookingsTable button { padding: .2rem .5rem; margin: 0 .2rem; }
+  </style>
+</head>
+<body class="login-page">
+  <div class="form-container">
+    <h2>🧙‍♂️ Staff Dashboard</h2>
+
+    <!-- Stats -->
+    <div id="stats">
+      <p>Total Bookings: <strong id="totalBookings">…</strong></p>
+      <p>Most Popular Facility: <strong id="popularFacility">…</strong></p>
+      <button id="refresh">Refresh Stats</button>
+    </div>
+
+    <!-- Booking table -->
+    <h3>All Bookings</h3>
+    <table id="bookingsTable">
+      <thead>
+        <tr>
+          <th>ID</th><th>User</th><th>Facility</th><th>Date</th><th>Time</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const API = 'http://localhost:3000/api';
+
+    // Ensure only staff can view
+    document.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('role') !== 'staff') {
+        alert('Access denied: staff only');
+        return window.location.href = 'login.html';
+      }
+      loadDashboard();
+      document.getElementById('refresh').onclick = loadDashboard;
+    });
+
+    async function loadDashboard() {
+      // 1) Total bookings
+      const { count } = await (await fetch(`${API}/booking-count`)).json();
+      document.getElementById('totalBookings').textContent = count;
+
+      // 2) Stats by facility
+      const stats = await (await fetch(`${API}/booking-stats`)).json();
+      if (stats.length) {
+        stats.sort((a,b)=>b.count-a.count);
+        const top = stats[0];
+        document.getElementById('popularFacility').textContent = 
+          `${top.facility} (${top.count})`;
+      }
+
+      // 3) Load all bookings
+      const bookings = await (await fetch(`${API}/bookings`)).json();
+      const tbody = document.querySelector('#bookingsTable tbody');
+      tbody.innerHTML = '';
+      bookings.forEach(b => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${b.id}</td>
+          <td>${b.hogwartsId}</td>
+          <td>${b.facility}</td>
+          <td>${b.date}</td>
+          <td>${b.timeSlot}</td>
+          <td>
+            <button onclick="blockBooking(${b.id})">Block</button>
+            <button onclick="editBooking(${b.id})">Edit</button>
+          </td>
+        `;
+        tbody.append(tr);
+      });
+    }
+
+    async function blockBooking(id) {
+      if (!confirm('Block this booking?')) return;
+      await fetch(`${API}/book/${id}`, { method: 'DELETE' });
+      loadDashboard();
+    }
+
+    function editBooking(id) {
+      const facility = prompt('New facility?');
+      const date     = prompt('New date (YYYY-MM-DD)?');
+      const timeSlot = prompt('New time slot?');
+      if (!facility || !date || !timeSlot) return;
+      fetch(`${API}/book/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ facility, date, timeSlot })
+      }).then(() => loadDashboard());
+    }
+  </script>
+</body>
+</html>
