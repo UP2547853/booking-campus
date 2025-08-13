@@ -1,27 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Staff Dashboard | Hogwarts</title>
+
+  <!-- Fonts + Global CSS -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+
+  <!-- Chart.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
   <style>
-    /* Quick tweaks to match your theme */
-    #stats p { font-size: 1.1em; margin: .5rem 0; }
-    #bookingsTable { width:100%; border-collapse: collapse; margin-top:1rem; }
-    #bookingsTable th, #bookingsTable td { padding: .5rem; border: 1px solid #444; }
-    #bookingsTable button { padding: .2rem .5rem; margin: 0 .2rem; }
+    /* ===== Layout: header buttons ===== */
+    .top-controls {
+      position: relative;
+      height: 44px;
+      margin-bottom: 12px;
+    }
+    .logout-btn, .refresh-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      line-height: 1;
+      background: transparent;
+      border: 1px solid #ffdd57;
+      color: #ffdd57;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .logout-btn { position: absolute; left: 10px; top: 6px; }
+    .refresh-btn { position: absolute; right: 10px; top: 6px; }
+    .logout-btn:hover { background: rgba(255,0,0,0.08); color: #ff4d4d; }
+    .refresh-btn:hover { background: rgba(255,255,255,0.06); }
+
+    /* ===== Stats + Chart ===== */
+    .stats-chart {
+      display: flex;
+      align-items: center;
+      justify-content: center;   /* center the whole block */
+      gap: 2rem;
+      margin: 1rem 0 0.5rem;
+      flex-wrap: wrap;           /* stack on narrow screens */
+    }
+    .stats-block {
+      min-width: 280px;
+      font-size: 1.15em;
+      text-align: left;
+    }
+    .chart-wrap {
+      width: 300px;
+      height: 300px;
+      display: grid;
+      place-items: center;
+    }
+    .chart-wrap canvas { width: 300px; height: 300px; }
+
+    /* ===== Table ===== */
+    #bookingsTable { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    #bookingsTable th, #bookingsTable td { padding: .6rem; border: 1px solid #444; }
+
+    /* Container anchor */
+    .form-container.staff-dashboard { position: relative; }
   </style>
 </head>
-<body class="login-page">
-  <div class="form-container">
+
+<body class="login-page staff-dashboard">
+  <div class="form-container staff-dashboard">
+    <!-- Header buttons -->
+    <div class="top-controls">
+      <button id="logoutBtn" class="logout-btn">🚪 Logout</button>
+      <button id="refresh" class="refresh-btn">Refresh Stats</button>
+    </div>
+
     <h2>🧙‍♂️ Staff Dashboard</h2>
 
-    <!-- Stats -->
-    <div id="stats">
-      <p>Total Bookings: <strong id="totalBookings">…</strong></p>
-      <p>Most Popular Facility: <strong id="popularFacility">…</strong></p>
-      <button id="refresh">Refresh Stats</button>
+    <!-- Stats + Chart -->
+    <div class="stats-chart">
+      <div class="stats-block">
+        <p>Total Bookings: <strong id="totalBookings">—</strong></p>
+        <p>Most Popular Facility: <strong id="popularFacility">—</strong></p>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="facilityPie" width="300" height="300"></canvas>
+      </div>
     </div>
 
     <!-- Booking table -->
@@ -29,7 +93,12 @@
     <table id="bookingsTable">
       <thead>
         <tr>
-          <th>ID</th><th>User</th><th>Facility</th><th>Date</th><th>Time</th><th>Actions</th>
+          <th>ID</th>
+          <th>User</th>
+          <th>Facility</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -38,52 +107,175 @@
 
   <script>
     const API = 'http://localhost:3000/api';
+    let facilityChart = null;
 
-    // Ensure only staff can view
+    // -------- Normalization to canonical labels (solves "Swimming" vs "Swimming Pool", case, etc.)
+    function normalizeFacility(raw) {
+      const f = String(raw || '').trim().toLowerCase();
+      if (!f) return null;
+
+      const map = {
+        'gym': 'Gym',
+        'badminton': 'Badminton Court',
+        'badminton court': 'Badminton Court',
+        'swimming': 'Swimming Pool',
+        'swimming pool': 'Swimming Pool',
+        'pool': 'Swimming Pool',
+        'classroom a': 'Classroom A', 'classrooma': 'Classroom A',
+        'classroom b': 'Classroom B', 'classroomb': 'Classroom B',
+        'classroom c': 'Classroom C', 'classroomc': 'Classroom C',
+        'classroom d': 'Classroom D', 'classroomd': 'Classroom D',
+      };
+      return map[f] || null;
+    }
+
+    function aggregateStats(rows) {
+      const counts = new Map();
+      for (const r of rows || []) {
+        const key = normalizeFacility(r.facility);
+        if (!key) continue;
+        counts.set(key, (counts.get(key) || 0) + Number(r.count || 0));
+      }
+      return [...counts.entries()]
+        .map(([facility, count]) => ({ facility, count }))
+        .sort((a, b) => b.count - a.count);
+    }
+
+    // -------- Utils
+    async function getJSON(url) {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      return res.json();
+    }
+
+    // -------- Boot
     document.addEventListener('DOMContentLoaded', () => {
       if (localStorage.getItem('role') !== 'staff') {
         alert('Access denied: staff only');
-        return window.location.href = 'login.html';
+        return (window.location.href = 'login.html');
       }
+      document.getElementById('refresh').addEventListener('click', loadDashboard);
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = 'index.html';
+      });
       loadDashboard();
-      document.getElementById('refresh').onclick = loadDashboard;
     });
 
+    // -------- Main loader
     async function loadDashboard() {
-      // 1) Total bookings
-      const { count } = await (await fetch(`${API}/booking-count`)).json();
-      document.getElementById('totalBookings').textContent = count;
+      await Promise.all([
+        loadTotalBookings(),
+        loadStatsAndChart(),
+        loadBookingsTable()
+      ]);
+    }
 
-      // 2) Stats by facility
-      const stats = await (await fetch(`${API}/booking-stats`)).json();
-      if (stats.length) {
-        stats.sort((a,b)=>b.count-a.count);
-        const top = stats[0];
-        document.getElementById('popularFacility').textContent = 
-          `${top.facility} (${top.count})`;
+    async function loadTotalBookings() {
+      try {
+        const { count } = await getJSON(`${API}/booking-count`);
+        document.getElementById('totalBookings').textContent = count ?? 0;
+      } catch (e) {
+        console.error('booking-count failed', e);
+        document.getElementById('totalBookings').textContent = '—';
+      }
+    }
+
+    async function loadStatsAndChart() {
+      let raw = [];
+      try {
+        raw = await getJSON(`${API}/booking-stats`); // [{facility, count}]
+      } catch (e) {
+        console.error('booking-stats failed', e);
       }
 
-      // 3) Load all bookings
-      const bookings = await (await fetch(`${API}/bookings`)).json();
-      const tbody = document.querySelector('#bookingsTable tbody');
-      tbody.innerHTML = '';
-      bookings.forEach(b => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${b.id}</td>
-          <td>${b.hogwartsId}</td>
-          <td>${b.facility}</td>
-          <td>${b.date}</td>
-          <td>${b.timeSlot}</td>
-          <td>
-            <button onclick="blockBooking(${b.id})">Block</button>
-            <button onclick="editBooking(${b.id})">Edit</button>
-          </td>
-        `;
-        tbody.append(tr);
+      const stats = aggregateStats(raw);
+      const popularEl = document.getElementById('popularFacility');
+      if (stats.length) {
+        popularEl.textContent = `${stats[0].facility} (${stats[0].count})`;
+      } else {
+        popularEl.textContent = '—';
+      }
+      drawFacilityPie(stats);
+    }
+
+    async function loadBookingsTable() {
+      try {
+        const bookings = await getJSON(`${API}/bookings`);
+        const tbody = document.querySelector('#bookingsTable tbody');
+        tbody.innerHTML = '';
+        bookings.forEach(b => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${b.id}</td>
+            <td>${b.hogwartsId}</td>
+            <td>${b.facility}</td>
+            <td>${b.date}</td>
+            <td>${b.timeSlot}</td>
+            <td>
+              <button onclick="blockBooking(${b.id})">Block</button>
+            </td>
+          `;
+          tbody.append(tr);
+        });
+      } catch (e) {
+        console.error('bookings failed', e);
+      }
+    }
+
+    // -------- Chart
+    function drawFacilityPie(stats) {
+      const labels = stats.map(s => s.facility);
+      const data   = stats.map(s => s.count);
+
+      const canvas = document.getElementById('facilityPie');
+      const ctx = canvas.getContext('2d');
+
+      if (facilityChart) { facilityChart.destroy(); facilityChart = null; }
+
+      if (!data.length) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#fceabb';
+        ctx.font = '14px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('No bookings yet', canvas.width / 2, canvas.height / 2);
+        return;
+      }
+
+      const palette = ['#ffdd57','#c77dff','#8ee4ff','#ffd7a8','#9effa1','#ff9ecb','#b5b8ff']
+        .slice(0, labels.length);
+
+      facilityChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels,
+          datasets: [{
+            data,
+            backgroundColor: palette,
+            borderColor: '#151527',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: false, // keep 300x300
+          plugins: {
+            legend: { position: 'right', labels: { color: '#fceabb', boxWidth: 14 } },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const total = data.reduce((a,b)=>a+b,0) || 1;
+                  const pct = Math.round((ctx.raw/total)*100);
+                  return `${ctx.label}: ${ctx.raw} (${pct}%)`;
+                }
+              }
+            }
+          }
+        }
       });
     }
 
+    // -------- Actions
     async function blockBooking(id) {
       if (!confirm('Block this booking?')) return;
       await fetch(`${API}/book/${id}`, { method: 'DELETE' });
@@ -91,14 +283,12 @@
     }
 
     function editBooking(id) {
-      const facility = prompt('New facility?');
-      const date     = prompt('New date (YYYY-MM-DD)?');
-      const timeSlot = prompt('New time slot?');
-      if (!facility || !date || !timeSlot) return;
+      const facility = prompt('New facility? (e.g., Gym, Swimming Pool, Badminton Court, Classroom A-D)');
+      if (!facility) return;
       fetch(`${API}/book/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ facility, date, timeSlot })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ facility })
       }).then(() => loadDashboard());
     }
   </script>

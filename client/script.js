@@ -4,8 +4,8 @@ console.log("✅ script.js loaded");
 document.addEventListener("DOMContentLoaded", () => {
   console.log("🚀 Booking page initialized");
   const facilityEl = document.getElementById("facility");
-  const dateEl     = document.getElementById("bookingDate");
-  const formEl     = document.getElementById("bookingForm");
+  const dateEl = document.getElementById("bookingDate");
+  const formEl = document.getElementById("bookingForm");
 
   if (facilityEl && dateEl && formEl) {
     facilityEl.addEventListener("change", showAvailability);
@@ -127,3 +127,6 @@ async function submitBooking(e) {
     resultDiv.textContent = "Network error—please try again.";
   }
 }
+
+
+

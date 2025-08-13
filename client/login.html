@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Hogwarts Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="login-page">
 
   <div class="form-container">
@@ -25,46 +27,47 @@
   </div>
 
   <script>
-  // Wait for the form to load, then bind a submit handler
-  document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('loginForm');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();  // prevent normal form submission
-      console.log("🔔 loginUser() fired");
+    // Wait for the form to load, then bind a submit handler
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('loginForm');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();  // prevent normal form submission
+        console.log("🔔 loginUser() fired");
 
-      const id  = document.getElementById('hogwartsId').value.trim();
-      const pw  = document.getElementById('password').value;
-      const msg = document.getElementById('loginResult');
+        const id = document.getElementById('hogwartsId').value.trim();
+        const pw = document.getElementById('password').value;
+        const msg = document.getElementById('loginResult');
 
-      try {
-        const res = await fetch('http://localhost:3000/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ hogwartsId: id, password: pw })
-        });
-        const data = await res.json();
+        try {
+          const res = await fetch('http://localhost:3000/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ hogwartsId: id, password: pw })
+          });
+          const data = await res.json();
 
-        if (res.ok && data.success) {
-  localStorage.setItem('hogwartsId', id);
-  localStorage.setItem('role', data.role);
+          if (res.ok && data.success) {
+            localStorage.setItem('hogwartsId', id);
+            localStorage.setItem('role', data.role);
 
-  // Redirect staff to staff.html, everyone else to booking.html
-  if (data.role === 'staff') {
-    window.location.href = 'staff.html';
-  } else {
-    window.location.href = 'booking.html';
-  }
-} else {
+            // Redirect staff to staff.html, everyone else to booking.html
+            if (data.role === 'staff') {
+              window.location.href = 'staff.html';
+            } else {
+              window.location.href = 'booking.html';
+            }
+          } else {
+            msg.style.color = '#ff9999';
+            msg.textContent = `❌ ${data.error || 'Login failed'}`;
+          }
+        } catch (err) {
           msg.style.color = '#ff9999';
-          msg.textContent = `❌ ${data.error || 'Login failed'}`;
+          msg.textContent = 'Network error—please try again.';
         }
-      } catch (err) {
-        msg.style.color = '#ff9999';
-        msg.textContent = 'Network error—please try again.';
-      }
+      });
     });
-  });
   </script>
 
 </body>
+
 </html>

@@ -62,9 +62,12 @@ a:hover {
 }
 
 .hogwarts-img img {
-  max-width: 80%;    /* scale image to at most 80% of its container’s width */
-  width: 600px;      /* or pick a fixed width that you like */
-  height: auto;      /* preserve aspect ratio */
+  max-width: 80%;
+  /* scale image to at most 80% of its container’s width */
+  width: 600px;
+  /* or pick a fixed width that you like */
+  height: auto;
+  /* preserve aspect ratio */
   border-radius: 15px;
   box-shadow: 0 0 20px #ffc107;
   opacity: 0.5;
@@ -142,24 +145,36 @@ body.login-page {
 
 /* Simple fade-in animation */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Center the form elements */
 .form-container form {
   display: flex;
   flex-direction: column;
-  align-items: center;    /* center children horizontally */
-  text-align: center;      /* center label text */
+  align-items: center;
+  /* center children horizontally */
+  text-align: center;
+  /* center label text */
 }
 
 /* Make inputs and button a fixed width, centered */
 .form-container input,
 .form-container button {
-  width: 80%;              /* 80% of the container’s width */
-  max-width: 320px;        /* but never wider than 320px */
-  margin: 0.5rem 0;        /* vertical spacing, auto horizontal */
+  width: 80%;
+  /* 80% of the container’s width */
+  max-width: 320px;
+  /* but never wider than 320px */
+  margin: 0.5rem 0;
+  /* vertical spacing, auto horizontal */
 }
 
 /* Add a bit more top margin on the button */
@@ -179,7 +194,7 @@ body.booking-page {
   align-items: center;
   justify-content: center;
   background: radial-gradient(circle at top left,
-              #1b2735 0%, #090a0f 50%, #03060b 100%);
+      #1b2735 0%, #090a0f 50%, #03060b 100%);
 }
 
 .booking-container {
@@ -190,8 +205,8 @@ body.booking-page {
   border: 2px solid #ffdd57;
   border-radius: 12px;
   box-shadow:
-    0 0 15px rgba(106,13,173,0.7),
-    inset 0 0 10px rgba(255,221,87,0.4);
+    0 0 15px rgba(106, 13, 173, 0.7),
+    inset 0 0 10px rgba(255, 221, 87, 0.4);
   text-align: center;
   animation: fadeIn 0.8s ease-out both;
 }
@@ -231,14 +246,14 @@ body.booking-page {
   border-radius: 8px;
   background: #1a2533;
   color: #f0e6c8;
-  box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
   transition: box-shadow 0.2s, transform 0.2s;
 }
 
 .booking-container select:focus,
 .booking-container input[type="date"]:focus {
   box-shadow:
-    inset 0 0 8px rgba(0,0,0,0.5),
+    inset 0 0 8px rgba(0, 0, 0, 0.5),
     0 0 8px #6a0dad,
     0 0 16px #c77dff;
   transform: translateY(-2px);
@@ -273,23 +288,32 @@ body.booking-page {
   margin-top: 1rem;
   font-size: 1.1rem;
   font-weight: 600;
-  text-shadow: 0 0 4px rgba(0,0,0,0.5);
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Fade-in */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .booking-container form {
   display: flex;
   flex-direction: column;
-  align-items: stretch;      /* make all fields full-width */
+  align-items: stretch;
+  /* make all fields full-width */
 }
 
 .form-group {
-  margin-bottom: 1.25rem;     /* space between rows */
+  margin-bottom: 1.25rem;
+  /* space between rows */
 }
 
 /* Make labels stand above their fields */
@@ -341,12 +365,14 @@ body.booking-page {
 }
 
 .heatmap-cell.free {
-  background: #4dff4d;   /* green = available */
+  background: #4dff4d;
+  /* green = available */
   box-shadow: 0 0 5px #4dff4d;
 }
 
 .heatmap-cell.booked {
-  background: #ff4d4d;   /* red = booked */
+  background: #ff4d4d;
+  /* red = booked */
   box-shadow: 0 0 5px #ff4d4d;
 }
 
@@ -367,50 +393,62 @@ body.booking-page {
 
 /*****************************Logout Button*******************************************************/
 
-/* Small logout button fixed to the top‐right of the viewport */
-.logout-button {
-  /* Pin it to the viewport corner */
-  position: fixed !important;
-  top: 1px !important; /* ↓ distance from the **top** of the screen */
-  right: 16px !important; /* ← distance from the **right** of the screen */
-  z-index: 9999 !important;
+.logout-btn {
+  position: absolute !important;
+  /* Distance from top/left of the container */
+  top: 15px !important;
+  /* Increase this value to push the button lower */
+  left: 25px !important;
+  /* Increase to move further right, decrease to move left */
 
-  /* Auto-size, no inherited full-width or big padding */
+  display: inline-block !important;
   width: auto !important;
-  min-width: 0 !important;
-  padding: 0.25rem 0.5rem !important;
-  font-size: 0.8rem !important;
+
+  /* Controls button size */
+  padding: 4px 10px !important;
+  /* First value = top/bottom space, second = left/right space */
+  font-size: 0.85rem !important;
+  /* Increase for larger text */
+
   line-height: 1 !important;
 
-  /* A slim border, transparent background */
+  /* Button style */
   background: transparent !important;
-  border: 1px solid rgba(255,255,255,0.8) !important;
-  color: #ffffff !important;
-
-  /* Remove big shadows or rounded madness */
+  border: 1px solid #ffdd57 !important;
+  /* Gold border */
+  color: #ffdd57 !important;
+  /* Gold text */
   box-shadow: none !important;
   text-shadow: none !important;
   border-radius: 4px !important;
+  /* Adjust for more/less rounded corners */
 
   cursor: pointer !important;
-  transition: background 0.2s !important;
+  transition: background 0.2s, color 0.2s !important;
+  z-index: 999 !important;
 }
 
-.logout-button:hover {
-  background: rgba(204, 0, 0, 0.85) !important;  /* deep red with some transparency */
-  border-color: #cc0000 !important;               /* matching solid border */
-  color: #fff !important;                         /* white text for contrast */
+.logout-btn:hover {
+  background: rgba(255, 0, 0, 0.1) !important;
+  /* Red hover background */
+  color: #ff4d4d !important;
+  /* Red text on hover */
 }
 
 /***********************************View Booking Button*******************************************/
 
 
 .view-bookings-btn {
-  display: inline-block;        /* keeps it sized to its content */
-  margin-bottom: 1rem;          /* space below the button */
-  padding: 0.4rem 0.8rem;       /* vertical / horizontal padding */
-  background: #ffdd57;          /* your golden yellow */
-  color: #0a0a20;               /* dark text */
+  display: inline-block;
+  /* keeps it sized to its content */
+  margin-bottom: 1rem;
+  /* space below the button */
+  padding: 0.4rem 0.8rem;
+  /* vertical / horizontal padding */
+  background: #ffdd57;
+  /* your golden yellow */
+  color: #0a0a20;
+  /* dark text */
   font-weight: bold;
   border-radius: 6px;
   text-decoration: none;
@@ -429,28 +467,431 @@ body.booking-page {
 .refresh-btn {
   /* pin to top-right inside the container */
   position: absolute !important;
-  top:    2px      !important;  /* 8px down */
-  right:  25px      !important;  /* 8px in from the right */
+  top: 2px !important;
+  /* 8px down */
+  right: 25px !important;
+  /* 8px in from the right */
 
   /* make it small & inline */
   display: inline-block !important;
-  width:   auto    !important;
-  padding: 2px 6px !important;  /* tiny padding */
-  font-size: 0.75rem !important;/* small text */
-  line-height: 1   !important;  /* no extra height */
+  width: auto !important;
+  padding: 2px 6px !important;
+  /* tiny padding */
+  font-size: 0.75rem !important;
+  /* small text */
+  line-height: 1 !important;
+  /* no extra height */
 
   /* reset all the big-button visuals */
   background: transparent !important;
-  border: 1px solid #ffdd57 !important;  /* match your theme */
-  color: #ffdd57    !important;
-  box-shadow: none  !important;
+  border: 1px solid #ffdd57 !important;
+  /* match your theme */
+  color: #ffdd57 !important;
+  box-shadow: none !important;
   text-shadow: none !important;
   border-radius: 4px !important;
 
-  cursor: pointer   !important;
+  cursor: pointer !important;
   transition: background 0.2s !important;
-  z-index: 999      !important;
+  z-index: 999 !important;
 }
+
 .refresh-btn:hover {
-  background: rgba(255,221,87,0.1) !important;
+  background: rgba(255, 221, 87, 0.1) !important;
+}
+
+/***************************************Staff Dashboard***************************************************/
+
+/* Ensure login-page layout doesn't limit dashboard */
+body.staff-dashboard {
+  /* kill global padding & flex centering from login page */
+  padding: 0 !important;
+  margin: 0 !important;
+  display: block !important;
+  min-height: 100vh;
+}
+
+body.staff-dashboard .form-container,
+.form-container.staff-dashboard {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 100vh !important;
+  margin: 0 !important;
+  padding: 1rem !important;
+  box-sizing: border-box !important;
+
+  border: 3px solid #ffdd57 !important;
+  /* thicker border */
+  background: rgba(10, 10, 20, 0.85) !important;
+  border-radius: 0 !important;
+  /* Optional: edge-to-edge look */
+  box-shadow: none !important;
+  /* Optional: remove glow */
+}
+
+/* Table & stats stay the same but scoped to staff page */
+body.staff-dashboard #stats p {
+  font-size: 1.1em;
+  margin: .5rem 0;
+}
+
+body.staff-dashboard #bookingsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+body.staff-dashboard #bookingsTable th,
+body.staff-dashboard #bookingsTable td {
+  padding: .5rem;
+  border: 1px solid #444;
+}
+
+body.staff-dashboard #bookingsTable button {
+  padding: .2rem .5rem;
+  margin: 0 .2rem;
+}
+
+/* Center the two stats lines */
+#stats {
+  text-align: center;
+  position: relative;
+  /* so we can place the button inside if needed */
+  padding-top: 2.25rem;
+  /* leave room so the button never overlaps text */
+}
+
+/* Make the container the anchor for absolute positioning */
+.form-container {
+  position: relative;
+  /* anchor for the top-right button */
+}
+
+/* Top-right refresh button (compact) */
+.refresh-btn {
+  position: absolute !important;
+  top: 12px !important;
+  right: 16px !important;
+
+  display: inline-block !important;
+  width: auto !important;
+  padding: 4px 10px !important;
+  font-size: 0.85rem !important;
+  line-height: 1 !important;
+
+  background: transparent !important;
+  border: 1px solid #ffdd57 !important;
+  color: #ffdd57 !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  cursor: pointer !important;
+  transition: background .2s !important;
+}
+
+.refresh-btn:hover {
+  background: rgba(255, 221, 87, .12) !important;
+}
+
+/* === Staff Dashboard Overrides === */
+body.staff-dashboard .form-container {
+  max-width: none !important;
+  /* remove 360px limit */
+  width: 100% !important;
+  /* full width */
+  text-align: center;
+  /* center text inside */
+  margin: 0 auto;
+  /* center container if smaller than screen */
+}
+
+/* Center the stats text and keep button top-right */
+body.staff-dashboard #stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* horizontal center */
+  position: relative;
+  /* anchor for absolute button */
+}
+
+body.staff-dashboard .refresh-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+/******************************************Back Button***********************************************/
+
+.back-btn {
+  position: absolute !important;
+  top: 12px !important;
+  left: 16px !important;
+  /* swapped from right to left */
+
+  display: inline-block !important;
+  width: auto !important;
+  padding: 4px 10px !important;
+  font-size: 0.85rem !important;
+  line-height: 1 !important;
+
+  background: transparent !important;
+  border: 1px solid #ffdd57 !important;
+  color: #ffdd57 !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  cursor: pointer !important;
+  transition: background .2s !important;
+}
+
+.back-btn:hover {
+  background: rgba(255, 221, 87, 0.12) !important;
+}
+
+/******************************************Audio button********************************************/
+
+/* Bar container (keeps your existing placement) */
+.audio-bar {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  gap: 10px;
+  padding: 6px 12px;
+  border: 1px solid #ffdd57;
+  border-radius: 10px;
+  background: rgba(10, 10, 20, 0.85);
+  color: #ffdd57;
+  box-shadow: 0 0 12px rgba(255, 221, 87, .25), inset 0 0 10px rgba(106, 13, 173, .25);
+}
+
+/* ---------- Shared base for both magical buttons ---------- */
+.btn-magic,
+.btn-magic-secondary {
+  --gold: #ffdd57;
+  --violet: #6a0dad;
+  --ink: #0b0b1a;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  font-size: .95rem;
+  font-weight: 700;
+  letter-spacing: .2px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+  overflow: hidden;
+}
+
+/* Primary (Play/Pause) */
+.btn-magic {
+  color: var(--gold);
+  background: radial-gradient(120% 120% at 50% 0%,
+      rgba(255, 221, 87, .18) 0%,
+      rgba(106, 13, 173, .22) 70%,
+      rgba(11, 11, 26, 0) 100%);
+  border: 1px solid var(--gold);
+  box-shadow:
+    0 0 10px rgba(255, 221, 87, .25),
+    inset 0 0 12px rgba(255, 221, 87, .15),
+    inset 0 0 24px rgba(106, 13, 173, .18);
+}
+
+/* Secondary (Mute/Unmute) */
+.btn-magic-secondary {
+  color: #0a0a20;
+  background: linear-gradient(135deg, #ffdd57 0%, #ffe98f 100%);
+  border: 1px solid #ffe98f;
+  box-shadow: 0 0 10px rgba(255, 221, 87, .45);
+}
+
+/* Hover/active */
+.btn-magic:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+  box-shadow:
+    0 0 16px rgba(255, 221, 87, .35),
+    0 0 28px rgba(106, 13, 173, .28),
+    inset 0 0 18px rgba(255, 221, 87, .25);
+}
+
+.btn-magic-secondary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+  box-shadow: 0 0 18px rgba(255, 221, 87, .65);
+}
+
+.btn-magic:active,
+.btn-magic-secondary:active {
+  transform: translateY(0);
+}
+
+/* Sparkles */
+.btn-magic::before,
+.btn-magic-secondary::before {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  background:
+    radial-gradient(6px 6px at 20% 30%, rgba(255, 221, 87, .9) 0%, transparent 60%),
+    radial-gradient(4px 4px at 65% 55%, rgba(255, 255, 255, .85) 0%, transparent 60%),
+    radial-gradient(5px 5px at 80% 25%, rgba(199, 125, 255, .9) 0%, transparent 60%),
+    radial-gradient(3px 3px at 40% 80%, rgba(255, 221, 87, .9) 0%, transparent 60%);
+  opacity: 0;
+  animation: sparkle 2.6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes sparkle {
+  0% {
+    transform: translateX(-8%) translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: .25;
+  }
+
+  50% {
+    opacity: .35;
+  }
+
+  100% {
+    transform: translateX(8%) translateY(-2%) rotate(2deg);
+    opacity: 0;
+  }
+}
+
+/* Focus ring */
+.btn-magic:focus-visible,
+.btn-magic-secondary:focus-visible {
+  outline: 2px solid #ffe98f;
+  outline-offset: 2px;
+}
+
+/* Optional: state-driven styles if you toggle classes in JS */
+.btn-magic.is-playing {
+  color: #ffe98f;
+}
+
+/********************************************Glittering*******************************************/
+
+
+/* Glitter layer */
+#glitter-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.glitter {
+  position: absolute;
+  top: -10vh;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #ffe98f 45%, rgba(255, 221, 87, 0) 70%);
+  filter: drop-shadow(0 0 4px #ffdd57);
+  opacity: 0.9;
+
+  animation-name: glitter-fall, glitter-twinkle;
+  animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+  will-change: transform, opacity;
+}
+
+/* Falling motion */
+@keyframes glitter-fall {
+  0% {
+    transform: translateY(-10vh) translateX(0) rotate(0deg);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(110vh) translateX(var(--drift, 0)) rotate(360deg);
+    opacity: 0.3;
+  }
+}
+
+/* Twinkling (opacity only) */
+@keyframes glitter-twinkle {
+
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Color variants */
+.glitter.g1 {
+  background: radial-gradient(circle, #fff 0%, #ffdd57 45%, rgba(255, 221, 87, 0) 70%);
+}
+
+.glitter.g2 {
+  background: radial-gradient(circle, #fff 0%, #c77dff 45%, rgba(199, 125, 255, 0) 70%);
+}
+
+.glitter.g3 {
+  background: radial-gradient(circle, #fff 0%, #8ee4ff 45%, rgba(142, 228, 255, 0) 70%);
+}
+
+/****************************************Pie Chart & Stats Centralized*************************************/
+
+/* Side-by-side layout for stats + chart, perfectly centered */
+.stats-chart {
+  display: flex;
+  align-items: center;
+  /* vertically aligned */
+  justify-content: center;
+  /* center both together */
+  gap: 4rem;
+  /* equal spacing between them */
+  margin: 1.5rem auto;
+  max-width: 1000px;
+  /* total width limit */
+  padding: 0 1rem;
+}
+
+.stats-block,
+.chart-wrap {
+  flex: 1;
+  /* both take equal space */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* centers content horizontally */
+}
+
+.stats-block {
+  text-align: center;
+  line-height: 1.6;
+}
+
+.chart-wrap {
+  max-width: 240px;
+}
+
+.chart-wrap canvas {
+  width: 220px !important;
+  height: 220px !important;
+}
+
+/* Stack on smaller screens */
+@media (max-width: 700px) {
+  .stats-chart {
+    flex-direction: column;
+    max-width: 520px;
+    gap: 1rem;
+  }
 }
